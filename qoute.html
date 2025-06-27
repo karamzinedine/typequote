@@ -161,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenSpan.style.visibility = 'hidden';
             hiddenSpan.style.position = 'absolute';
             hiddenSpan.style.direction = 'rtl';
-            hiddenSpan.style.whiteSpace = 'nowrap';
             document.body.appendChild(hiddenSpan);
 
             // Create visible text container
@@ -169,7 +168,6 @@ document.addEventListener('DOMContentLoaded', function() {
             textContainer.style.direction = 'rtl';
             textContainer.style.unicodeBidi = 'embed';
             textContainer.style.display = 'inline-block';
-            textContainer.style.whiteSpace = 'nowrap';
             lineElement.insertBefore(textContainer, cursor);
 
             let charIndex = 0;
