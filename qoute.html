@@ -50,6 +50,11 @@
     font-family: "Noto Sans Arabic", sans-serif;
     font-weight: 600;
     font-style: normal;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    -webkit-font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    -moz-font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    font-variant-ligatures: common-ligatures contextual;
 }
 
 #acadimiat-quote-container .quote-line.visible {
@@ -144,14 +149,23 @@ document.addEventListener('DOMContentLoaded', function() {
             cursor.className = 'typing-cursor';
             lineElement.appendChild(cursor);
 
+            // Create a text container to maintain Arabic shaping
+            const textContainer = document.createElement('span');
+            textContainer.style.direction = 'rtl';
+            textContainer.style.unicodeBidi = 'embed';
+            textContainer.style.textRendering = 'optimizeLegibility';
+            textContainer.style.fontFeatureSettings = '"liga" 1, "calt" 1, "kern" 1';
+            textContainer.style.webkitFontFeatureSettings = '"liga" 1, "calt" 1, "kern" 1';
+            textContainer.style.mozFontFeatureSettings = '"liga" 1, "calt" 1, "kern" 1';
+            textContainer.style.fontVariantLigatures = 'common-ligatures contextual';
+            lineElement.insertBefore(textContainer, cursor);
+
             let charIndex = 0;
             
             function typeNextChar() {
                 if (charIndex < text.length) {
-                    // Insert character before cursor
-                    const char = text.charAt(charIndex);
-                    const textNode = document.createTextNode(char);
-                    lineElement.insertBefore(textNode, cursor);
+                    // Update the entire text content to maintain Arabic shaping
+                    textContainer.textContent = text.substring(0, charIndex + 1);
                     charIndex++;
                     
                     // Continue typing with slight delay
