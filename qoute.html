@@ -81,7 +81,7 @@
     opacity: 1 !important;
 }
 
-/* Responsive adjustments */
+/* Mobile-specific Arabic text fixes */
 @media (max-width: 768px) {
     #acadimiat-quote-container {
         padding: 25px 15px;
@@ -92,6 +92,10 @@
         font-size: clamp(16px, 4.5vw, 22px);
         line-height: 1.1;
         margin-bottom: 18px;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 }
 
@@ -118,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Arabic quote lines
     const arabicLines = [
-        "البقاء في عالم اليوم لا يتطلب فقط السعي للحاق به، بل القدرة على مواكبة التغيير المستمر الذي يطرأ عليه، فهو لا يتحرك بسرعة فحسب، بل يتغير باستمرار أثناء حركته.",
+        "البقاء في عالم اليوم لا يتطلب فقط السعي للحاق به، بل القدرة على مواكبة التغيير المستمر الذي يطرأ عليه، فهو لا يتحرك بسرعة فحسب، بل يتغير باستمرار أثناء حركته."
     ];
 
     let isAnimating = false;
@@ -149,29 +153,41 @@ document.addEventListener('DOMContentLoaded', function() {
             cursor.className = 'typing-cursor';
             lineElement.appendChild(cursor);
 
-            // Create a text container to maintain Arabic shaping
+            // Create a hidden span with full text for proper shaping reference
+            const hiddenSpan = document.createElement('span');
+            hiddenSpan.textContent = text;
+            hiddenSpan.style.visibility = 'hidden';
+            hiddenSpan.style.position = 'absolute';
+            hiddenSpan.style.direction = 'rtl';
+            hiddenSpan.style.whiteSpace = 'nowrap';
+            document.body.appendChild(hiddenSpan);
+
+            // Create visible text container
             const textContainer = document.createElement('span');
             textContainer.style.direction = 'rtl';
             textContainer.style.unicodeBidi = 'embed';
-            textContainer.style.textRendering = 'optimizeLegibility';
-            textContainer.style.fontFeatureSettings = '"liga" 1, "calt" 1, "kern" 1';
-            textContainer.style.webkitFontFeatureSettings = '"liga" 1, "calt" 1, "kern" 1';
-            textContainer.style.mozFontFeatureSettings = '"liga" 1, "calt" 1, "kern" 1';
-            textContainer.style.fontVariantLigatures = 'common-ligatures contextual';
+            textContainer.style.display = 'inline-block';
+            textContainer.style.whiteSpace = 'nowrap';
             lineElement.insertBefore(textContainer, cursor);
 
             let charIndex = 0;
             
             function typeNextChar() {
                 if (charIndex < text.length) {
-                    // Update the entire text content to maintain Arabic shaping
-                    textContainer.textContent = text.substring(0, charIndex + 1);
+                    // Use substring to maintain proper Arabic shaping
+                    const currentText = text.substring(0, charIndex + 1);
+                    textContainer.textContent = currentText;
+                    
+                    // Force layout recalculation for mobile browsers
+                    textContainer.offsetHeight;
+                    
                     charIndex++;
                     
                     // Continue typing with slight delay
-                    setTimeout(typeNextChar, 60 + Math.random() * 40); // Vary speed slightly
+                    setTimeout(typeNextChar, 60 + Math.random() * 40);
                 } else {
-                    // Remove cursor and call callback
+                    // Clean up
+                    document.body.removeChild(hiddenSpan);
                     cursor.remove();
                     if (callback) callback();
                 }
