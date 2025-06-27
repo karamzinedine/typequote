@@ -1,4 +1,5 @@
 <!-- Acadimiat-Optimized Arabic Typewriter Quote -->
+<div id="acadimiat-quote-background-icons"></div>
 <div id="acadimiat-quote-container" class="noto-sans-arabic" style="
     font-family: 'Noto Sans Arabic', sans-serif;
     font-weight: 600;
@@ -8,6 +9,8 @@
     direction: rtl;
     text-align: center;
     max-width: 800px;
+    position: relative;
+    z-index: 2;
 ">
     <div id="acadimiat-quote-display"></div>
     <div id="acadimiat-quote-author" style="
@@ -22,13 +25,46 @@
 </div>
 
 <style>
-/* Import Noto Sans Arabic font */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap');
 
 .noto-sans-arabic {
     font-family: "Noto Sans Arabic", sans-serif;
     font-weight: 600;
     font-style: normal;
+}
+
+#acadimiat-quote-background-icons {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.floating-icon {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    opacity: 0.5;
+    animation: floatIcon 20s linear infinite;
+    z-index: 1;
+}
+
+@keyframes floatIcon {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.07;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
 }
 
 #acadimiat-quote-container {
@@ -81,21 +117,14 @@
     opacity: 1 !important;
 }
 
-/* Mobile-specific Arabic text fixes */
 @media (max-width: 768px) {
     #acadimiat-quote-container {
         padding: 25px 15px;
         margin: 15px auto;
     }
-    
     #acadimiat-quote-container .quote-line {
         font-size: clamp(16px, 4.5vw, 22px);
-        line-height: 1.1;
         margin-bottom: 18px;
-        -webkit-text-size-adjust: 100%;
-        text-size-adjust: 100%;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
     }
 }
 
@@ -103,27 +132,21 @@
     #acadimiat-quote-container {
         padding: 20px 10px;
     }
-    
     #acadimiat-quote-container .quote-line {
         font-size: clamp(15px, 5vw, 20px);
-        line-height: 1.1;
         margin-bottom: 15px;
     }
 }
 </style>
 
 <script>
-// Ensure script runs after DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Check if already loaded to prevent conflicts
     if (window.acadimiatTypewriterActive) return;
     window.acadimiatTypewriterActive = true;
 
-    // Arabic quote lines
     const arabicLines = [
         "البقاء في عالم اليوم لا يتطلب فقط السعي للحاق به",
-        "بل القدرة على مواكبة التغيير المستمر الذي يطرأ عليه، فهو لا يتحرك بسرعة فحسب", 
+        "بل القدرة على مواكبة التغيير المستمر الذي يطرأ عليه، فهو لا يتحرك بسرعة فحسب",
         "بل يتغير باستمرار أثناء حركته"
     ];
 
@@ -132,125 +155,89 @@ document.addEventListener('DOMContentLoaded', function() {
     function initAcadimiatTypewriter() {
         const container = document.getElementById('acadimiat-quote-display');
         const author = document.getElementById('acadimiat-quote-author');
-        
-        if (!container) {
-            console.log('Container not found');
-            return;
-        }
 
+        if (!container) return;
         if (isAnimating) return;
         isAnimating = true;
 
-        // Clear previous content
         container.innerHTML = '';
-        if (author) {
-            author.classList.remove('visible');
-        }
+        if (author) author.classList.remove('visible');
 
         let currentLineIndex = 0;
 
         function typewriterEffect(text, lineElement, callback) {
-            // Create cursor
             const cursor = document.createElement('span');
             cursor.className = 'typing-cursor';
             lineElement.appendChild(cursor);
 
-            // Create a hidden span with full text for proper shaping reference
-            const hiddenSpan = document.createElement('span');
-            hiddenSpan.textContent = text;
-            hiddenSpan.style.visibility = 'hidden';
-            hiddenSpan.style.position = 'absolute';
-            hiddenSpan.style.direction = 'rtl';
-            document.body.appendChild(hiddenSpan);
-
-            // Create visible text container
             const textContainer = document.createElement('span');
             textContainer.style.direction = 'rtl';
-            textContainer.style.unicodeBidi = 'embed';
-            textContainer.style.display = 'inline-block';
             lineElement.insertBefore(textContainer, cursor);
 
             let charIndex = 0;
-            
             function typeNextChar() {
                 if (charIndex < text.length) {
-                    // Use substring to maintain proper Arabic shaping
-                    const currentText = text.substring(0, charIndex + 1);
-                    textContainer.textContent = currentText;
-                    
-                    // Force layout recalculation for mobile browsers
-                    textContainer.offsetHeight;
-                    
+                    textContainer.textContent = text.substring(0, charIndex + 1);
                     charIndex++;
-                    
-                    // Continue typing with slight delay
                     setTimeout(typeNextChar, 60 + Math.random() * 40);
                 } else {
-                    // Clean up
-                    document.body.removeChild(hiddenSpan);
                     cursor.remove();
                     if (callback) callback();
                 }
             }
-
             typeNextChar();
         }
 
         function showNextLine() {
             if (currentLineIndex < arabicLines.length) {
-                // Create line element
                 const lineDiv = document.createElement('div');
                 lineDiv.className = 'quote-line';
-                lineDiv.style.direction = 'rtl';
                 container.appendChild(lineDiv);
-
-                // Show line with animation
                 setTimeout(() => {
                     lineDiv.classList.add('visible');
-                    
-                    // Start typewriter effect after line is visible
                     setTimeout(() => {
                         typewriterEffect(arabicLines[currentLineIndex], lineDiv, () => {
                             currentLineIndex++;
-                            // Delay before next line
                             setTimeout(showNextLine, 700);
                         });
                     }, 200);
                 }, 100);
-                
             } else {
-                // Show author after all lines complete
-                if (author) {
-                    setTimeout(() => {
-                        author.classList.add('visible');
-                    }, 800);
-                }
+                if (author) setTimeout(() => author.classList.add('visible'), 800);
                 isAnimating = false;
             }
         }
 
-        // Start the animation
         showNextLine();
     }
 
-    // Initialize immediately if DOM is ready
     initAcadimiatTypewriter();
 
-    // Add click to restart functionality
     document.addEventListener('click', function(e) {
         const container = e.target.closest('#acadimiat-quote-container');
-        if (container && !isAnimating) {
-            setTimeout(initAcadimiatTypewriter, 100);
-        }
+        if (container && !isAnimating) setTimeout(initAcadimiatTypewriter, 100);
     });
 
-});
+    // Background icons
+    const iconUrls = [
+      "https://cdn-icons-png.flaticon.com/512/7951/7951888.png",
+      "https://cdn-icons-png.flaticon.com/512/7951/7951880.png",
+      "https://cdn-icons-png.flaticon.com/512/7951/7951920.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Double_quotation_mark.svg/800px-Double_quotation_mark.svg.png"
+    ];
 
-// Fallback - try again after a short delay if DOM wasn't ready
-setTimeout(function() {
-    if (!window.acadimiatTypewriterActive) {
-        const event = new Event('DOMContentLoaded');
-        document.dispatchEvent(event);
+    const bgContainer = document.getElementById('acadimiat-quote-background-icons');
+    if (bgContainer) {
+      for (let i = 0; i < 15; i++) {
+        const icon = document.createElement('img');
+        icon.src = iconUrls[Math.floor(Math.random() * iconUrls.length)];
+        icon.className = 'floating-icon';
+        icon.style.top = Math.random() * 100 + '%';
+        icon.style.left = Math.random() * 100 + '%';
+        icon.style.animationDuration = (20 + Math.random() * 20) + 's';
+        icon.style.transform = `rotate(${Math.random() * 360}deg)`;
+        bgContainer.appendChild(icon);
+      }
     }
-}, 500);
+});
 </script>
