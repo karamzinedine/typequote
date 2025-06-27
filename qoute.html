@@ -1,0 +1,154 @@
+<!-- Acadimiat-Optimized Arabic Typewriter Quote -->
+<div id="acadimiat-quote-container" style="
+    font-family: 'Noto Sans Arabic', Arial, sans-serif;
+    padding: 30px;
+    margin: 20px 0;
+    direction: rtl;
+    text-align: center;
+">
+    <div id="acadimiat-quote-display"></div>
+    <div id="acadimiat-quote-author" style="
+        text-align: center;
+        margin-top: 20px;
+        font-style: italic;
+        color: #666;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    ">— حكمة في زمن التغيير —</div>
+</div>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500&display=swap');
+
+#acadimiat-quote-container .quote-line {
+    font-size: clamp(16px, 3vw, 24px);
+    color: #333;
+    line-height: 1.8;
+    margin-bottom: 15px;
+    min-height: 1.8em;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+#acadimiat-quote-container .quote-line.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#acadimiat-quote-container .typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: #333;
+    margin-right: 2px;
+    animation: acadimiat-blink 1s infinite;
+    vertical-align: text-bottom;
+}
+
+@keyframes acadimiat-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+#acadimiat-quote-author.visible {
+    opacity: 1 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #acadimiat-quote-container {
+        padding: 20px;
+        margin: 15px 0;
+    }
+    
+    #acadimiat-quote-container .quote-line {
+        font-size: clamp(14px, 4vw, 20px);
+        line-height: 1.6;
+        margin-bottom: 12px;
+    }
+}
+</style>
+
+<script>
+(function() {
+    // Ensure we don't conflict with existing scripts
+    if (window.acadimiatTypewriterLoaded) return;
+    window.acadimiatTypewriterLoaded = true;
+
+    const lines = [
+        "البقاء في عالم اليوم لا يتطلب فقط السعي للحاق به",
+        "بل القدرة على مواكبة التغيير المستمر الذي يطرأ عليه، فهو لا يتحرك بسرعة فحسب",
+        "بل يتغير باستمرار أثناء حركته"
+    ];
+
+    function startAcadimiatTypewriter() {
+        const container = document.getElementById('acadimiat-quote-display');
+        const author = document.getElementById('acadimiat-quote-author');
+        
+        if (!container) return;
+
+        let currentLine = 0;
+
+        function typeLine(text, callback) {
+            const lineDiv = document.createElement('div');
+            lineDiv.className = 'quote-line';
+            container.appendChild(lineDiv);
+
+            // Show line with fade-in
+            setTimeout(() => lineDiv.classList.add('visible'), 100);
+
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            lineDiv.appendChild(cursor);
+
+            let charIndex = 0;
+            const typeInterval = setInterval(() => {
+                if (charIndex < text.length) {
+                    const textNode = document.createTextNode(text.charAt(charIndex));
+                    lineDiv.insertBefore(textNode, cursor);
+                    charIndex++;
+                } else {
+                    clearInterval(typeInterval);
+                    cursor.remove();
+                    if (callback) callback();
+                }
+            }, 50);
+        }
+
+        function showNextLine() {
+            if (currentLine < lines.length) {
+                typeLine(lines[currentLine], () => {
+                    currentLine++;
+                    setTimeout(showNextLine, 600);
+                });
+            } else {
+                // Show author after all lines are complete
+                setTimeout(() => {
+                    if (author) author.classList.add('visible');
+                }, 500);
+            }
+        }
+
+        // Clear container and start
+        container.innerHTML = '';
+        currentLine = 0;
+        showNextLine();
+    }
+
+    // Start when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startAcadimiatTypewriter);
+    } else {
+        startAcadimiatTypewriter();
+    }
+
+    // Optional: Restart on click
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('#acadimiat-quote-container')) {
+            startAcadimiatTypewriter();
+        }
+    });
+})();
+</script>
