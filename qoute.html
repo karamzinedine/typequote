@@ -38,7 +38,7 @@
 #acadimiat-quote-container .quote-line {
     font-size: clamp(18px, 3.5vw, 26px);
     color: #2c3e50;
-    line-height: 1.1;
+    line-height: 0.5;
     margin-bottom: 20px;
     min-height: 2em;
     opacity: 0;
@@ -122,7 +122,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Arabic quote lines
     const arabicLines = [
-        "البقاء في عالم اليوم لا يتطلب فقط السعي للحاق به، بل القدرة على مواكبة التغيير المستمر الذي يطرأ عليه، فهو لا يتحرك بسرعة فحسب، بل يتغير باستمرار أثناء حركته."
+        "البقاء في عالم اليوم لا يتطلب فقط السعي للحاق به",
+        "بل القدرة على مواكبة التغيير المستمر الذي يطرأ عليه، فهو لا يتحرك بسرعة فحسب", 
+        "بل يتغير باستمرار أثناء حركته"
     ];
 
     let isAnimating = false;
